@@ -7,7 +7,7 @@ const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "mysql",
-  database: "Proyector V1"
+  database: "tienda"
 });
 
 // Conexión a la base de datos
@@ -20,7 +20,7 @@ db.connect((err) => {
 
 // Obtener todos los elementos
 exports.getAllUsers = (req, res) => {
-  db.query('SELECT * FROM users', (err, result) => {
+  db.query('SELECT * FROM tienda.Usuarios', (err, result) => {
     if (err) {
       res.status(500).send('Error al obtener los elementos');
       throw err;
