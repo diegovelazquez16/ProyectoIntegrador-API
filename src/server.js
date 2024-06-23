@@ -5,7 +5,7 @@ const usersJWTRoutes = require('./routes/users_jwt');
 const ventasRoutes = require('./routes/ventas')
 require('dotenv').config();
 const app = express();
-const port = process.env.DB_PORT || 3001;
+const port = process.env.DB_PORT || 3000;
 
 // Middleware para analizar los cuerpos de las solicitudes
 app.use(bodyParser.json());

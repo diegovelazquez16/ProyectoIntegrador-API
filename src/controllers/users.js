@@ -20,7 +20,7 @@ db.connect((err) => {
 
 // Obtener todos los elementos
 exports.getAllUsers = (req, res) => {
-  db.query('SELECT * FROM tienda.Usuarios', (err, result) => {
+  db.query('SELECT * FROM tienda.usuario', (err, result) => {
     if (err) {
       res.status(500).send('Error al obtener los elementos');
       throw err;
@@ -44,7 +44,7 @@ exports.addUser = (req, res) => {
       return; // Stop execution if there's an error hashing
     }
     newUser.password = hash;  
-    db.query('INSERT INTO users SET ?', newUser, (err, result) => {
+    db.query('INSERT INTO usuario VALUES (?,?,?,?)', [newUser.id, newUser.usuario, newUser.password, newUser.email], (err, result) => {
       if (err) {
         res.status(500).send('Error al agregar el usuario');
         return; // Stop execution if there's an error inserting

@@ -16,7 +16,7 @@ db.connect((err) => {
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  db.query('SELECT * FROM users WHERE email = ? and password = ?', [email, password], async (err, result) => {
+  db.query('SELECT * FROM usuario WHERE email = ?  ', [email], async (err, result) => {
     if (err) {
       res.status(500).send('Error en el servidor');
       throw err;
@@ -31,7 +31,7 @@ exports.login = async (req, res) => {
       return res.status(401).send('Credenciales inválidas');
     }
     // Generar JWT
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30h' });
     res.json({ token });
   });
 };
@@ -53,7 +53,7 @@ const authenticateJWT = (req, res, next) => {
 };
 // Rutas protegidas con autenticación JWT
 exports.getAllUsers = [authenticateJWT, (req, res) => {
-  db.query('SELECT * FROM users', (err, result) => {
+  db.query('SELECT * FROM usuario', (err, result) => {
     if (err) {
       res.status(500).send('Error al obtener los usuarios');
       throw err;
