@@ -7,7 +7,7 @@ const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "mysql",
-  database: "Proyector V1"
+  database: "tienda"
 });
 
 // Conexión a la base de datos
@@ -20,7 +20,7 @@ db.connect((err) => {
 
 // Obtener todos los elementos
 exports.getAllUsers = (req, res) => {
-  db.query('SELECT * FROM users', (err, result) => {
+  db.query('SELECT * FROM tienda.usuario', (err, result) => {
     if (err) {
       res.status(500).send('Error al obtener los elementos');
       throw err;
@@ -38,16 +38,19 @@ exports.getAllUsers = (req, res) => {
 exports.addUser = (req, res) => {
   const newUser = req.body;
   // Hashear la contraseña antes de guardarla (bcrypt)
-  bcrypt.hash(newUser.password, 10, (err, hash) => { // 10 es el número de rondas de hashing
+  bcrypt.hash(newUser.pass, 10, (err, hash) => { // 10 es el número de rondas de hashing
     if (err) {
+      console.log(err);
       res.status(500).send('Error al hashear la contraseña');
       return; // Stop execution if there's an error hashing
     }
-    newUser.password = hash;  
-    db.query('INSERT INTO users SET ?', newUser, (err, result) => {
+    newUser.pass = hash; 
+    db.query('INSERT INTO usuario VALUES (?,?,?,?)', [newUser.id, newUser.usuario, newUser.pass, newUser.email], (err, result) => {
       if (err) {
         res.status(500).send('Error al agregar el usuario');
-        return; // Stop execution if there's an error inserting
+        console.log(err);
+        return; // Stop execution if there's an error insertinglog
+       
       }
       res.status(201).send('Usuario agregado correctamente');
     });
@@ -58,7 +61,7 @@ exports.addUser = (req, res) => {
 exports.updateUser = (req, res) => {
   const userId = req.params.id;
   const updatedUser = req.body;
-  db.query('UPDATE users SET ? WHERE id = ?', [updatedUser, userId], (err, result) => {
+  db.query('UPDATE usuario SET ? WHERE id = ?', [updatedUser, userId], (err, result) => {
     if (err) {
       res.status(500).send('Error al actualizar el elemento');
       throw err;
@@ -70,7 +73,7 @@ exports.updateUser = (req, res) => {
 // Eliminar un elemento
 exports.deleteUser = (req, res) => {
   const userId = req.params.id;
-  db.query('DELETE FROM users WHERE id = ?', userId, (err, result) => {
+  db.query('DELETE FROM usuario WHERE id = ?', userId, (err, result) => {
     if (err) {
       res.status(500).send('Error al eliminar el elemento');
       throw err;

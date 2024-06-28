@@ -4,10 +4,10 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 // Configuración de la base de datos (igual que antes)
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE
+  host: "localhost",
+  user: "root",
+  password: "mysql",
+  database: "tienda"
 });
 db.connect((err) => {
   if (err) throw err;
@@ -15,8 +15,8 @@ db.connect((err) => {
 });
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  db.query('SELECT * FROM users WHERE email = ? and password = ?', [email, password], async (err, result) => {
+  const { email, pass} = req.body;
+  db.query('SELECT * FROM usuario WHERE email = ?  ', [email], async (err, result) => {
     if (err) {
       res.status(500).send('Error en el servidor');
       throw err;
@@ -26,12 +26,12 @@ exports.login = async (req, res) => {
     }
     const user = result[0];
     // Verificar contraseña (con bcrypt)
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(pass, user.pass);
     if (!validPassword) {
       return res.status(401).send('Credenciales inválidas');
     }
     // Generar JWT
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30h' });
     res.json({ token });
   });
 };
@@ -53,7 +53,7 @@ const authenticateJWT = (req, res, next) => {
 };
 // Rutas protegidas con autenticación JWT
 exports.getAllUsers = [authenticateJWT, (req, res) => {
-  db.query('SELECT * FROM users', (err, result) => {
+  db.query('SELECT * FROM usuario', (err, result) => {
     if (err) {
       res.status(500).send('Error al obtener los usuarios');
       throw err;

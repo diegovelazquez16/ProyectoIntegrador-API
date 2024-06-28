@@ -10,5 +10,3 @@ router.delete('/:id', ventasController.deleteUser);
 
 module.exports = router;
 
-
-
