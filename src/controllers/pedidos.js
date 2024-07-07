@@ -18,7 +18,7 @@ db.connect((err) => {
 });
 
 // Obtener todos los elementos
-exports.getAllUsers = (req, res) => {
+exports.getAllPedidos = (req, res) => {
   db.query('SELECT * FROM ventas', (err, result) => {
     if (err) {
       res.status(500).send('Error al obtener los elementos');
@@ -29,7 +29,7 @@ exports.getAllUsers = (req, res) => {
 };
 
 // Agregar un nuevo elemento
-exports.addUser = (req, res) => {
+exports.addPedidos = (req, res) => {
   const newUser = req.body;
   db.query('INSERT INTO ventas SET ?', newUser, (err, result) => {
     if (err) {
@@ -41,7 +41,7 @@ exports.addUser = (req, res) => {
 };
 
 // Actualizar un elemento existente
-exports.updateUser = (req, res) => {
+exports.updatePedidos = (req, res) => {
   const userId = req.params.id;
   const updatedUser = req.body;
   db.query('UPDATE ventas SET ? WHERE id = ?', [updatedUser, userId], (err, result) => {
@@ -54,7 +54,7 @@ exports.updateUser = (req, res) => {
 };
 
 // Eliminar un elemento
-exports.deleteUser = (req, res) => {
+exports.deletePedidos = (req, res) => {
   const userId = req.params.id;
   db.query('DELETE FROM ventas WHERE id = ?', userId, (err, result) => {
     if (err) {

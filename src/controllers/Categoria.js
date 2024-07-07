@@ -1,21 +1,26 @@
 const mysql = require('mysql2');
-
+const bcrypt = require('bcrypt');
+//Cargar las variables de entorno
+require('dotenv').config();
+// Configuración de la conexión a la base de datos MySQL
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "mysql",
-    database: "tiendaUniformesDeportivos3"
-  });
+  host: "localhost",
+  user: "root",
+  password: "mysql",
+  database: "tiendaUniformesDeportivos3"
+});
 
-  db.connect((err) => {
-    if (err) {
-      throw err;
-    }
-    console.log('producto-Conexión a la BD establecida');
-  });
+// Conexión a la base de datos
+db.connect((err) => {
+  if (err) {
+    throw err;
+  }
+  console.log('Users-Conexión a la BD establecida');
+});
 
-  exports.getAllproductos = (req, res) => {
-    db.query('SELECT * FROM producto', (err, result) => {
+// Obtener todos los elementos
+exports.getAllCategorias = (req, res) => {
+    db.query('SELECT * FROM ventas', (err, result) => {
       if (err) {
         res.status(500).send('Error al obtener los elementos');
         throw err;
@@ -25,9 +30,9 @@ const db = mysql.createConnection({
   };
   
   // Agregar un nuevo elemento
-  exports.addproducto = (req, res) => {
+  exports.addCategoria = (req, res) => {
     const newUser = req.body;
-    db.query('INSERT INTO producto SET ?', newUser, (err, result) => {
+    db.query('INSERT INTO ventas SET ?', newUser, (err, result) => {
       if (err) {
         res.status(500).send('Error al agregar un nuevo elemento');
         throw err;
@@ -37,10 +42,10 @@ const db = mysql.createConnection({
   };
   
   // Actualizar un elemento existente
-  exports.updateproducto = (req, res) => {
+  exports.updateCategorias = (req, res) => {
     const userId = req.params.id;
     const updatedUser = req.body;
-    db.query('UPDATE producto SET ? WHERE id = ?', [updatedUser, userId], (err, result) => {
+    db.query('UPDATE ventas SET ? WHERE id = ?', [updatedUser, userId], (err, result) => {
       if (err) {
         res.status(500).send('Error al actualizar el elemento');
         throw err;
@@ -50,9 +55,9 @@ const db = mysql.createConnection({
   };
   
   // Eliminar un elemento
-  exports.deleteproducto = (req, res) => {
+  exports.deleteCategorias = (req, res) => {
     const userId = req.params.id;
-    db.query('DELETE FROM producto WHERE id = ?', userId, (err, result) => {
+    db.query('DELETE FROM ventas WHERE id = ?', userId, (err, result) => {
       if (err) {
         res.status(500).send('Error al eliminar el elemento');
         throw err;

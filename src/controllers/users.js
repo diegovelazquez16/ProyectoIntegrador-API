@@ -7,7 +7,7 @@ const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "mysql",
-  database: "tienda"
+  database: "tiendaUniformesDeportivos3"
 });
 
 // Conexión a la base de datos
@@ -20,7 +20,7 @@ db.connect((err) => {
 
 // Obtener todos los elementos
 exports.getAllUsers = (req, res) => {
-  db.query('SELECT * FROM tienda.usuario', (err, result) => {
+  db.query('SELECT * FROM tiendaUniformesDeportivos3.usuario', (err, result) => {
     if (err) {
       res.status(500).send('Error al obtener los elementos');
       throw err;
@@ -37,20 +37,28 @@ exports.getAllUsers = (req, res) => {
 // sesión si no hashean la contraseña antes de validar.
 exports.addUser = (req, res) => {
   const newUser = req.body;
+  
+  // Validaciones básicas
+  if (!newUser.usuario || !newUser.pass || !newUser.email) {
+    return res.status(400).send('Usuario, contraseña y email son requeridos');
+  }
+
   // Hashear la contraseña antes de guardarla (bcrypt)
   bcrypt.hash(newUser.pass, 10, (err, hash) => { // 10 es el número de rondas de hashing
     if (err) {
       console.log(err);
       res.status(500).send('Error al hashear la contraseña');
-      return; // Stop execution if there's an error hashing
+      return; // Detener la ejecución si hay un error al hashear
     }
     newUser.pass = hash; 
-    db.query('INSERT INTO usuario VALUES (?,?,?,?)', [newUser.id, newUser.usuario, newUser.pass, newUser.email], (err, result) => {
+    
+    // Insertar el nuevo usuario en la base de datos
+    db.query('INSERT INTO usuario (usuario, pass, email, rol_id) VALUES (?, ?, ?, ?)', 
+      [newUser.usuario, newUser.pass, newUser.email, newUser.rol_id], (err, result) => {
       if (err) {
         res.status(500).send('Error al agregar el usuario');
         console.log(err);
-        return; // Stop execution if there's an error insertinglog
-       
+        return; // Detener la ejecución si hay un error al insertar
       }
       res.status(201).send('Usuario agregado correctamente');
     });
