@@ -1,66 +1,85 @@
 const mysql = require('mysql2');
-//Cargar las variables de entorno
 require('dotenv').config();
-// Configuración de la conexión a la base de datos MySQL
+
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "mysql",
-  database: "tiendaUniformesDeportivos3"
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "mysql",
+  database: process.env.DB_NAME || "tiendaUniformesDeportivos3"
 });
 
-// Conexión a la base de datos
 db.connect((err) => {
   if (err) {
-    throw err;
+    console.error('Error al conectar a la base de datos:', err);
+    return;
   }
-  console.log('Ventas-Conexión a la BD establecida');
+  console.log('Pedidos-Conexión a la BD establecida');
 });
 
-// Obtener todos los elementos
+// Obtener todos los pedidos
 exports.getAllPedidos = (req, res) => {
-  db.query('SELECT * FROM ventas', (err, result) => {
+  db.query('SELECT * FROM pedidos', (err, result) => {
     if (err) {
-      res.status(500).send('Error al obtener los elementos');
-      throw err;
+      console.error('Error al obtener los pedidos:', err);
+      return res.status(500).send('Error al obtener los pedidos');
     }
     res.json(result);
   });
 };
 
-// Agregar un nuevo elemento
-exports.addPedidos = (req, res) => {
-  const newUser = req.body;
-  db.query('INSERT INTO ventas SET ?', newUser, (err, result) => {
+// Obtener un pedido por ID
+exports.getPedidoById = (req, res) => {
+  const pedidoId = req.params.id;
+  db.query('SELECT * FROM pedidos WHERE idPedido = ?', [pedidoId], (err, result) => {
     if (err) {
-      res.status(500).send('Error al agregar un nuevo elemento');
-      throw err;
+      console.error('Error al obtener el pedido:', err);
+      return res.status(500).send('Error al obtener el pedido');
     }
-    res.status(201).send('Nuevo elemento agregado correctamente');
+    if (result.length === 0) {
+      return res.status(404).send('Pedido no encontrado');
+    }
+    res.json(result[0]);
   });
 };
 
-// Actualizar un elemento existente
-exports.updatePedidos = (req, res) => {
-  const userId = req.params.id;
-  const updatedUser = req.body;
-  db.query('UPDATE ventas SET ? WHERE id = ?', [updatedUser, userId], (err, result) => {
+// Agregar un nuevo pedido
+exports.addPedido = (req, res) => {
+  const newPedido = req.body;
+  db.query('INSERT INTO pedidos SET ?', newPedido, (err, result) => {
     if (err) {
-      res.status(500).send('Error al actualizar el elemento');
-      throw err;
+      console.error('Error al agregar un nuevo pedido:', err);
+      return res.status(500).send('Error al agregar un nuevo pedido');
     }
-    res.send('Elemento actualizado correctamente');
+    res.status(201).send('Nuevo pedido agregado correctamente');
   });
 };
 
-// Eliminar un elemento
-exports.deletePedidos = (req, res) => {
-  const userId = req.params.id;
-  db.query('DELETE FROM ventas WHERE id = ?', userId, (err, result) => {
+// Actualizar un pedido existente
+exports.updatePedido = (req, res) => {
+  const { id, ...updatedPedido } = req.body;
+  db.query('UPDATE pedidos SET ? WHERE idPedido = ?', [updatedPedido, id], (err, result) => {
     if (err) {
-      res.status(500).send('Error al eliminar el elemento');
-      throw err;
+      console.error('Error al actualizar el pedido:', err);
+      return res.status(500).send('Error al actualizar el pedido');
     }
-    res.send('Elemento eliminado correctamente');
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Pedido no encontrado');
+    }
+    res.send('Pedido actualizado correctamente');
+  });
+};
+
+// Eliminar un pedido
+exports.deletePedido = (req, res) => {
+  const { id } = req.body;
+  db.query('DELETE FROM pedidos WHERE idPedido = ?', [id], (err, result) => {
+    if (err) {
+      console.error('Error al eliminar el pedido:', err);
+      return res.status(500).send('Error al eliminar el pedido');
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Pedido no encontrado');
+    }
+    res.send('Pedido eliminado correctamente');
   });
 };

@@ -16,12 +16,13 @@ app.use(bodyParser.json());
 // Usar las rutas de los items
 app.use('/users', usersRoutes);
 app.use('/usersJWT', usersJWTRoutes);
-app.use('/productos',productosRoutes);
-app.use('/ventas',ventasRoutes);
-app.use('/Categorias',CategoriasRoutes);
-app.use('/pedidos',pedidosRoutes);
+app.use('/productos', productosRoutes);
+app.use('/ventas', ventasRoutes);
+app.use('/Categorias', CategoriasRoutes);
+app.use('/api/pedidos', pedidosRoutes);
 
 // Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor Express en ejecución en http://localhost:${port}`);
 });
+
