@@ -4,7 +4,7 @@ const usersController = require('../controllers/users');
 
 // Rutas para los endpoints CRUD
 router.get('/', usersController.getAllUsers);
-router.post('/', usersController.addUser);
+router.post('/agregar', usersController.addUser);
 router.put('/:id', usersController.updateUser);
 router.delete('/:id', usersController.deleteUser);
 

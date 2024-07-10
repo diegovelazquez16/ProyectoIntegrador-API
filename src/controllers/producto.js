@@ -1,20 +1,6 @@
 const mysql = require('mysql2');
 require('dotenv').config();
-
-const db = mysql.createConnection({
-  host: "localhost",
-  user:"root",
-  password: "mysql",
-  database: "tiendaUniformesDeportivos3"
-});
-
-db.connect((err) => {
-  if (err) {
-    console.error('Error al conectar a la base de datos:', err);
-    return;
-  }
-  console.log('Conexión a la BD establecida');
-});
+const db=require('./dataBase')
 
 // Obtener todos los productos
 exports.getAllProductos = (req, res) => {

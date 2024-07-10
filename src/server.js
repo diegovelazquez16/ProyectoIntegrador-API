@@ -6,10 +6,11 @@ const ventasRoutes = require('./routes/ventas');
 const productosRoutes = require('./routes/productos');
 const CategoriasRoutes = require('./routes/Categorias');
 const pedidosRoutes = require('./routes/pedidos');
+const cors=require('cors')
 require('dotenv').config();
 const app = express();
 const port = process.env.DB_PORT || 3000;
-
+app.use(cors())
 // Middleware para analizar los cuerpos de las solicitudes
 app.use(bodyParser.json());
 

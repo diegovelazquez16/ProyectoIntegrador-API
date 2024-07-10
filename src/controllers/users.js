@@ -3,21 +3,7 @@ const bcrypt = require('bcrypt');
 //Cargar las variables de entorno
 require('dotenv').config();
 // Configuración de la conexión a la base de datos MySQL
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "mysql",
-  database: "tiendaUniformesDeportivos3"
-});
-
-// Conexión a la base de datos
-db.connect((err) => {
-  if (err) {
-    throw err;
-  }
-  console.log('Users-Conexión a la BD establecida');
-});
-
+const db=require('./dataBase')
 // Obtener todos los elementos
 exports.getAllUsers = (req, res) => {
   db.query('SELECT * FROM tiendaUniformesDeportivos3.usuario', (err, result) => {
@@ -37,31 +23,27 @@ exports.getAllUsers = (req, res) => {
 // sesión si no hashean la contraseña antes de validar.
 exports.addUser = (req, res) => {
   const newUser = req.body;
-  
-  // Validaciones básicas
-  if (!newUser.usuario || !newUser.pass || !newUser.email) {
-    return res.status(400).send('Usuario, contraseña y email son requeridos');
-  }
-
-  // Hashear la contraseña antes de guardarla (bcrypt)
-  bcrypt.hash(newUser.pass, 10, (err, hash) => { // 10 es el número de rondas de hashing
+  bcrypt.hash(newUser.pass, 10, (err, hash) => {
     if (err) {
-      console.log(err);
-      res.status(500).send('Error al hashear la contraseña');
-      return; // Detener la ejecución si hay un error al hashear
-    }
-    newUser.pass = hash; 
-    
-    // Insertar el nuevo usuario en la base de datos
-    db.query('INSERT INTO usuario (usuario, pass, email, rol_id) VALUES (?, ?, ?, ?)', 
-      [newUser.usuario, newUser.pass, newUser.email, newUser.rol_id], (err, result) => {
-      if (err) {
-        res.status(500).send('Error al agregar el usuario');
-        console.log(err);
-        return; // Detener la ejecución si hay un error al insertar
+      if (!res.headersSent) {
+        res.status(500).send('Error al hashear la contraseña');
       }
-      res.status(201).send('Usuario agregado correctamente');
-    });
+      return;
+    }
+    newUser.pass = hash;
+    db.query('INSERT INTO usuario (usuario, pass, email, rol_id) VALUES (?, ?, ?, ?)',[newUser.usuario, newUser.pass, newUser.email, newUser.rol_id],
+      (error, result) => {
+        if (error) {
+          if (!res.headersSent) {
+            res.status(500).send('Error al agregar un nuevo usuario');
+          }
+          console.log(error);
+          return;
+        }
+        if (!res.headersSent) {
+          res.status(201).send('Nuevo usuario agregado correctamente');
+        }
+      });
   });
 };
 
@@ -77,6 +59,8 @@ exports.updateUser = (req, res) => {
     res.send('Elemento actualizado correctamente');
   });
 };
+
+
 
 // Eliminar un elemento
 exports.deleteUser = (req, res) => {

@@ -1,22 +1,13 @@
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
+const db=require('./dataBase')
+
 //Cargar las variables de entorno
 require('dotenv').config();
 // Configuración de la conexión a la base de datos MySQL
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "mysql",
-  database: "tiendaUniformesDeportivos3"
-});
 
 // Conexión a la base de datos
-db.connect((err) => {
-  if (err) {
-    throw err;
-  }
-  console.log('Users-Conexión a la BD establecida');
-});
+
 
 // Obtener todos los elementos
 exports.getAllCategorias = (req, res) => {
