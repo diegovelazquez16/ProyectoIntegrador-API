@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 require('dotenv').config();
-const db = require('./dataBase');
+const db = require('../baseDatos/dataBase');
 
 // Obtener todos los detalles de pedidos
 exports.getAllPedidoDetalles = (req, res) => {

@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 //Cargar las variables de entorno
 require('dotenv').config();
 // Configuración de la conexión a la base de datos MySQL
-const db = require('./dataBase'); // Ajustar la ruta si es necesario
+const db = require('../baseDatos/dataBase'); // Ajustar la ruta si es necesario
 
 // Obtener todos los usuarios
 exports.getAllUsers = (req, res) => {
@@ -13,17 +13,17 @@ exports.getAllUsers = (req, res) => {
       res.status(500).send('Error al obtener los usuarios');
       throw err;
     }
-    res.json(result);
+    res.json(result)
   });
-};                                                                 
-
+};                                                                                                           
+                                                             
 // Agregar un nuevo usuario
 exports.addUser = (req, res) => {
   const newUser = req.body;
 
   // Validaciones básicas
-  if (!newUser.usuario || !newUser.pass || !newUser.email || !newUser.rol_id || !newUser.apellidoP || !newUser.apellidoM || !newUser.nombre) {
-    return res.status(400).send('Usuario, contraseña, email, rol_id, apellidoP, apellidoM y nombre son requeridos');
+  if (!newUser.usuario || !newUser.pass || !newUser.email || !newUser.apellidoP || !newUser.apellidoM || !newUser.nombre ||!newUser.rol_id ) {
+    return res.status(400).send('Usuario, contraseña, email, apellidoP, apellidoM , nombre y rol_id son requeridos');
   }
 
   // Hashear la contraseña antes de guardarla (bcrypt)

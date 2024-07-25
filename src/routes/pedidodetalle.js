@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pedidodetalleController = require('./pedidodetalle');
+const pedidodetalleController = require('../controllers/pedidodetalle');
 
 // Ruta para obtener todos los detalles de pedidos
 router.get('/pedidodetalle', pedidodetalleController.getAllPedidoDetalles);

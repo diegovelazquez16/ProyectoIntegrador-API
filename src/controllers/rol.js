@@ -1,7 +1,7 @@
 //added
 const mysql = require('mysql2');
 require('dotenv').config();
-const db = require('./dataBase');
+const db = require('../baseDatos/dataBase');
 
 // Obtener todos los roles
 exports.getAllRoles = (req, res) => {

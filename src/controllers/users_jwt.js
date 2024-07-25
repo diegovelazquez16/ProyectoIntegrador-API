@@ -1,21 +1,22 @@
-//modified
-const mysql = require('mysql2');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-require('dotenv').config();
-const db = require('./dataBase'); // Ajustar la ruta si es necesario
+const jwt = require('jsonwebtoken');
+const db = require('../baseDatos/dataBase'); // Ajustar la ruta si es necesario
 
 // Función para manejar el login
 exports.loginJWT = async (req, res) => {
   const { email, pass } = req.body;
-  
+
   console.log('Email:', email);  // Log para verificar el email recibido
   console.log('Password:', pass);  // Log para verificar la contraseña recibida
 
+  if (!email || !pass) {
+    return res.status(400).send('Email y contraseña son requeridos');
+  }
+
   db.query('SELECT * FROM usuario WHERE email = ?', [email], async (err, result) => {
     if (err) {
-      res.status(500).send('Error en el servidor');
-      throw err;
+      console.error('Error en el servidor:', err);
+      return res.status(500).send('Error en el servidor');
     }
 
     if (result.length === 0) {
@@ -23,18 +24,30 @@ exports.loginJWT = async (req, res) => {
     }
 
     const user = result[0];
-    const validPassword = await bcrypt.compare(pass, user.pass);
-    
-    if (!validPassword) {
-      return res.status(401).send('Credenciales inválidas');
+
+    // Verifica si user.pass está definido
+    console.log('Contraseña almacenada:', user.pass);
+
+    if (!user.pass) {
+      return res.status(500).send('Error en la contraseña almacenada');
     }
 
-    console.log('JWT Secret:', process.env.JWT_SECRET);  // Verifica que la variable de entorno esté definida
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
+    try {
+      const validPassword = await bcrypt.compare(pass, user.pass);
+
+      if (!validPassword) {
+        return res.status(401).send('Credenciales inválidas');
+      }
+
+      console.log('JWT Secret:', process.env.JWT_SECRET);  // Verifica que la variable de entorno esté definida
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.json({ token, rol_id: user.rol_id });
+    } catch (error) {
+      console.error('Error al comparar la contraseña:', error);
+      res.status(500).send('Error en el servidor');
+    }
   });
 };
-
 // Ruta para obtener todos los usuarios (protegida con JWT)
 exports.getAllUsersJWT = (req, res) => {
   db.query('SELECT * FROM usuario', (err, result) => {
@@ -75,3 +88,4 @@ exports.addUserJWT = (req, res) => {
     });
   });
 };
+

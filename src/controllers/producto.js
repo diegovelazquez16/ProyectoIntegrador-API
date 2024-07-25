@@ -1,12 +1,7 @@
-//modified
 const mysql = require('mysql2');
 require('dotenv').config();
-const db = require('./dataBase');
-const multer = require('multer');
+const db = require('../baseDatos/dataBase');
 
-// Configuración de multer para almacenar archivos en memoria
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 // Obtener todos los productos
 exports.getAllProductos = (req, res) => {
@@ -22,7 +17,7 @@ exports.getAllProductos = (req, res) => {
 // Obtener un producto por ID
 exports.getProductoById = (req, res) => {
   const productoId = req.params.id;
-  db.query('SELECT * FROM producto WHERE idProducto = ?', [productoId], (err, result) => {
+  db.query('SELECT * FROM producto WHERE id = ?', [productoId], (err, result) => {
     if (err) {
       console.error('Error al obtener el producto:', err);
       return res.status(500).send('Error al obtener el producto');
@@ -35,59 +30,61 @@ exports.getProductoById = (req, res) => {
 };
 
 // Agregar un nuevo producto
-exports.addProducto = [
-  upload.single('img'), // Middleware de multer para manejar la carga de un solo archivo con el campo 'img'
-  (req, res) => {
-    const { nombreP, precio, talla, idCategoria, descripcion } = req.body;
+exports.addProducto = (req, res) => {
+  const { nombreP, precio, talla, descripcion, idCategoria } = req.body;
+  const imagen = req.file ? `/uploads/${req.file.filename}` : null;
 
-    // Verificar si se recibió un archivo de imagen
-    if (!req.file) {
-      return res.status(400).send('No se ha recibido la imagen del producto');
-    }
+  
+  // Convertir idCategoria a entero
+  const idCategoriaInt = parseInt(idCategoria, 10);
 
-    const img = req.file.buffer; // Acceder al buffer de la imagen
+  // Verificar si la conversión fue exitosa
+  if (isNaN(idCategoriaInt)) {
+    console.error('Valor inválido para idCategoria:', idCategoria);
+    return res.status(400).json({ error: 'Categoría inválida' });
+  }
 
-    db.query(
-      'INSERT INTO producto (nombreP, precio, talla, idCategoria, descripcion, img) VALUES (?, ?, ?, ?, ?, ?)',
-      [nombreP, precio, talla, idCategoria, descripcion, img],
-      (err) => {
-        if (err) {
-          console.error('Error al insertar el producto:', err);
-          return res.status(500).send('Error al agregar un nuevo producto');
-        }
-
-        res.status(201).send('Nuevo producto agregado correctamente');
+  db.query(
+    'INSERT INTO producto (nombreP, precio, talla, descripcion, idCategoria, imagenurl) VALUES (?, ?, ?, ?, ?, ?)',
+    [nombreP, precio, talla, descripcion, idCategoriaInt, imagen],
+    (err) => {
+      if (err) {
+        console.error('Error al insertar el producto:', err);
+        return res.status(500).json({ error: 'Error al agregar un nuevo producto' });
       }
-    );
-  },
-];
+      res.status(201).json({ message: 'Nuevo producto agregado correctamente' });
+    }
+  );
+};
+
+
 
 // Actualizar un producto existente
 exports.updateProducto = (req, res) => {
   const productoId = req.params.id;
-  const updatedProducto = req.body;
-  
-  // Verificar si se va a actualizar la imagen
-  if (req.file) {
-    updatedProducto.img = req.file.buffer;
-  }
+  const { nombreP, precio, talla, idCategoria, descripcion } = req.body;
+  const imagen = req.file ? req.file.filename : null;
 
-  db.query('UPDATE producto SET ? WHERE idProducto = ?', [updatedProducto, productoId], (err, result) => {
-    if (err) {
-      console.error('Error al actualizar el producto:', err);
-      return res.status(500).send('Error al actualizar el producto');
+  db.query(
+    'UPDATE producto SET nombreP = ?, precio = ?, talla = ?, idCategoria = ?, descripcion = ?, imagenurl = ? WHERE id = ?',
+    [nombreP, precio, talla, idCategoria, descripcion, imagen, productoId],
+    (err, result) => {
+      if (err) {
+        console.error('Error al actualizar el producto:', err);
+        return res.status(500).send('Error al actualizar el producto');
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).send('Producto no encontrado');
+      }
+      res.send('Producto actualizado correctamente');
     }
-    if (result.affectedRows === 0) {
-      return res.status(404).send('Producto no encontrado');
-    }
-    res.send('Producto actualizado correctamente');
-  });
+  );
 };
 
 // Eliminar un producto
 exports.deleteProducto = (req, res) => {
   const productoId = req.params.id;
-  db.query('DELETE FROM producto WHERE idProducto = ?', [productoId], (err, result) => {
+  db.query('DELETE FROM producto WHERE id = ?', [productoId], (err, result) => {
     if (err) {
       console.error('Error al eliminar el producto:', err);
       return res.status(500).send('Error al eliminar el producto');
@@ -98,3 +95,4 @@ exports.deleteProducto = (req, res) => {
     res.send('Producto eliminado correctamente');
   });
 };
+

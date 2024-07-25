@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const categoriaController = require('../controllers/Categoria');
+const categoriasController = require('../controllers/categoria');
 
-// Rutas para los endpoints CRUD
-router.get('/', categoriaController.getAllCategorias);
-router.post('/', categoriaController.addCategoria);
-router.put('/:id', categoriaController.updateCategorias);
-router.delete('/:id', categoriaController.deleteCategorias);
+// Verifica que todos los métodos del controlador están definidos y exportados correctamente
+router.get('/', categoriasController.getAllCategorias);
+router.post('/agregar', categoriasController.addCategoria);
+router.put('/:id', categoriasController.updateCategoria);
+router.delete('/:id', categoriasController.deleteCategoria);
 
 module.exports = router;

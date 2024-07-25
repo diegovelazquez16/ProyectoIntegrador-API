@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 require('dotenv').config();
-const db = require('./dataBase');
+const db = require('../baseDatos/dataBase');
 
 // Obtener todos los datos de transferencia
 exports.getAllDatosTransferencia = (req, res) => {
@@ -30,8 +30,18 @@ exports.getDatosTransferenciaById = (req, res) => {
 
 // Agregar nuevos datos de transferencia
 exports.addDatosTransferencia = (req, res) => {
-  const newDatosTransferencia = req.body;
-  db.query('INSERT INTO datosTransferencia SET ?', newDatosTransferencia, (err, result) => {
+  const { nombreBanco, duenoCuenta, clabeBanco } = req.body;
+
+  // Validación básica
+  if (!nombreBanco || !duenoCuenta || !clabeBanco) {
+    return res.status(400).send('Todos los campos (nombreBanco, duenoCuenta, clabeBanco) son requeridos');
+  }
+
+  // Consulta para insertar los datos en la base de datos
+  const query = 'INSERT INTO datostransferencia (nombreBanco, duenoCuenta, clabeBanco) VALUES (?, ?, ?)';
+  const values = [nombreBanco, duenoCuenta, clabeBanco];
+
+  db.query(query, values, (err, result) => {
     if (err) {
       console.error('Error al agregar nuevos datos de transferencia:', err);
       return res.status(500).send('Error al agregar nuevos datos de transferencia');
@@ -39,6 +49,7 @@ exports.addDatosTransferencia = (req, res) => {
     res.status(201).send('Nuevos datos de transferencia agregados correctamente');
   });
 };
+
 
 // Actualizar datos de transferencia existentes
 exports.updateDatosTransferencia = (req, res) => {
@@ -69,3 +80,4 @@ exports.deleteDatosTransferencia = (req, res) => {
     res.send('Datos de transferencia eliminados correctamente');
   });
 };
+
