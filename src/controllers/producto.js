@@ -95,4 +95,3 @@ exports.deleteProducto = (req, res) => {
     res.send('Producto eliminado correctamente');
   });
 };
-

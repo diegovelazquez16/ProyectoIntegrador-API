@@ -24,7 +24,7 @@ const upload = multer({
 });
 
 const uploadImage = (req, res) => {
-    console.log('Request file:', req.file);  // Verifica que req.file tenga datos
+    console.log('Request file:', req.file);
     if (!req.file) {
         return res.status(400).send('No file uploaded');
     }
@@ -36,9 +36,12 @@ const uploadImage = (req, res) => {
             console.error('Error inserting into database:', err);
             return res.status(500).send('Error uploading image');
         }
-        res.send('Image uploaded successfully');
+        res.json({ filename }); // <-- Responder con el nombre del archivo
     });
 };
+
+
+
 
 const getImages = (req, res) => {
     const sql = 'SELECT * FROM img_data';
