@@ -1,4 +1,3 @@
-//ok 
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -18,10 +17,19 @@ const pedidodetalleRoutes = require('./routes/pedidodetalle');
 const imageRoutes = require('./routes/imageRoutes'); 
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 4000;
+
+const corsOptions = {
+  origin: 'http://localhost:3000', // Cambia esto si tu frontend está en otro dominio
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true 
+};
+
+// Configuración de CORS
+app.use(cors(corsOptions));
 
 // Middleware para analizar los cuerpos de las solicitudes
-app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -35,7 +43,7 @@ app.use('/categorias', categoriasRoutes);
 app.use('/pedidos', pedidosRoutes);
 app.use('/api/rol', rolRoutes);
 app.use('/api/administrador', administradorRoutes);
-app.use('/api/datosTransferencia', datosTransferenciaRoutes);  // Asegúrate de que coincida con el router
+app.use('/api/datosTransferencia', datosTransferenciaRoutes);
 app.use('/api/pedidodetalle', pedidodetalleRoutes);
 
 // Añadir la ruta de imágenes antes de servir archivos estáticos
@@ -52,9 +60,5 @@ app.use((req, res) => {
 
 // Iniciar el servidor
 app.listen(port, () => {
-  console.log('Servidor Express en ejecución en http://localhost:${port}');
+  console.log(`Servidor Express en ejecución en http://localhost:${port}`);
 });
-
-
-
-
