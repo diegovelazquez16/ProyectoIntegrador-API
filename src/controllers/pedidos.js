@@ -31,11 +31,15 @@ exports.getPedidoById = (req, res) => {
 exports.addPedido = (req, res) => {
   const { nombreCliente, apellidoCliente, estado, cantidad, fechaPedido, total } = req.body;
 
+  if (!nombreCliente || !apellidoCliente || !estado || !cantidad || !fechaPedido || !total) {
+    return res.status(400).send('Faltan campos requeridos.');
+  }
+
   const newPedido = {
     nombreCliente,
     apellidoCliente,
     estado,
-    cantidad,
+    cantidad, // Asegúrate de que este campo se esté incluyendo
     fechaPedido,
     total
   };
@@ -48,6 +52,8 @@ exports.addPedido = (req, res) => {
     res.status(201).send('Nuevo pedido agregado correctamente');
   });
 };
+
+//ok
 
 // Actualizar un pedido existente
 exports.updatePedido = (req, res) => {

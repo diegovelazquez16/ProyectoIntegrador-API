@@ -2,16 +2,17 @@ const mysql = require('mysql2');
 require('dotenv').config();
 const db = require('../baseDatos/dataBase');
 
-// Obtener todos los datos de transferencia
-exports.getAllDatosTransferencia = (req, res) => {
-  db.query('SELECT * FROM datostransferencia', (err, result) => {
+// Obtener el último dato de transferencia
+exports.getLastDatosTransferencia = (req, res) => {
+  db.query('SELECT * FROM datostransferencia ORDER BY id DESC LIMIT 1', (err, result) => {
     if (err) {
-      console.error('Error al obtener los datos de transferencia:', err);
-      return res.status(500).send('Error al obtener los datos de transferencia');
+      console.error('Error al obtener el último dato de transferencia:', err);
+      return res.status(500).send('Error al obtener el último dato de transferencia');
     }
-    res.json(result);
+    res.json(result[0]);
   });
 };
+
 
 // Obtener datos de transferencia por ID
 exports.getDatosTransferenciaById = (req, res) => {
@@ -90,5 +91,3 @@ exports.deleteDatosTransferencia = (req, res) => {
     res.send('Datos de transferencia eliminados correctamente');
   });
 };
-
-

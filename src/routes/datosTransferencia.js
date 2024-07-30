@@ -3,7 +3,7 @@ const router = express.Router();
 const datosTransferenciaController = require('../controllers/datosTransferencia');
 
 // Ruta para obtener todos los datos de transferencia
-router.get('/', datosTransferenciaController.getAllDatosTransferencia);
+router.get('/ultimo', datosTransferenciaController.getLastDatosTransferencia);
 
 // Ruta para obtener datos de transferencia por ID
 router.get('/:id', datosTransferenciaController.getDatosTransferenciaById);
@@ -18,4 +18,3 @@ router.put('/', datosTransferenciaController.updateDatosTransferencia);
 router.delete('/', datosTransferenciaController.deleteDatosTransferencia);
 
 module.exports = router;
-
