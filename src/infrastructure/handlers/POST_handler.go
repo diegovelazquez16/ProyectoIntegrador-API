@@ -8,7 +8,7 @@ import (
 )
 ///pull
 // prueba pull #2
-// priueba pull #5
+// priueba pull #6
 func GithubWebhookHanlder(ctx *gin.Context) {
 	eventType := ctx.GetHeader("X-GitHub-Event")
 	deliveryID := ctx.GetHeader("X-GitHub-Delivery")
